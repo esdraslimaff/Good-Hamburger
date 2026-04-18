@@ -16,6 +16,6 @@ namespace GoodHamburger.Shared.Validators
             .NotEmpty().WithMessage("O pedido deve conter ao menos um item.")
             .Must(x => x.Count <= 3).WithMessage("Um pedido só pode ter no máximo 3 itens (1 sanduíche, 1 batata, 1 bebida).")
             .Must(x => x.Distinct().Count() == x.Count).WithMessage("Você não pode adicionar o mesmo item mais de uma vez.");
-        }
+        } 
     }
 }

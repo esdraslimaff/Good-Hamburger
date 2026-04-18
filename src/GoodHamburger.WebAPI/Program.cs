@@ -1,5 +1,8 @@
+using FluentValidation;
 using GoodHamburger.Application.DependencyInjection;
 using GoodHamburger.Infra.DependencyInjection;
+using GoodHamburger.Shared.Validators;
+using GoodHamburger.WebAPI.Middleware;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -11,6 +14,9 @@ builder.Services.AddSwaggerGen();
 
 builder.Services.AddInfrastructure(builder.Configuration);
 builder.Services.AddApplication();
+builder.Services.AddValidatorsFromAssemblyContaining<PedidoRequestValidator>();
+builder.Services.AddControllers();
+
 
 var app = builder.Build();
 
@@ -20,6 +26,10 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+
+app.MapControllers();
+
+app.UseMiddleware<ExceptionMiddleware>();
 
 app.UseHttpsRedirection();
 
