@@ -8,19 +8,12 @@ using System.Threading.Tasks;
 
 namespace GoodHamburger.Domain.Entities
 {
-    public class Pedido
+    public class Pedido : BaseEntity
     {
-        public Guid Id { get; private set; }
-        public DateTime DataCriacao { get; private set; }
-
         private readonly List<Item> _itens = new();
         public IReadOnlyCollection<Item> Itens => _itens.AsReadOnly();
 
-        public Pedido()
-        {
-            Id = Guid.NewGuid();
-            DataCriacao = DateTime.UtcNow;
-        }
+        public Pedido() : base() { }
 
         public void AdicionarItem(Item item)
         {
@@ -30,28 +23,26 @@ namespace GoodHamburger.Domain.Entities
             }
 
             _itens.Add(item);
+            RegistrarAlteracao();
         }
 
         public decimal CalcularSubtotal() => _itens.Sum(i => i.Preco);
 
-        public decimal CalcularDesconto()
+        public decimal CalcularDescontoPercentual()
         {
             var temSanduiche = _itens.Any(i => i.Tipo == TipoItem.Sanduiche);
             var temBatata = _itens.Any(i => i.Tipo == TipoItem.Acompanhamento);
             var temRefri = _itens.Any(i => i.Tipo == TipoItem.Bebida);
 
             if (temSanduiche && temBatata && temRefri) return 0.20m;
-            if (temSanduiche && temRefri) return 0.15m;            
-            if (temSanduiche && temBatata) return 0.10m; 
+            if (temSanduiche && temRefri) return 0.15m;
+            if (temSanduiche && temBatata) return 0.10m;
 
             return 0m;
         }
 
-        public decimal CalcularTotalFinal()
-        {
-            var subtotal = CalcularSubtotal();
-            var desconto = subtotal * CalcularDesconto();
-            return subtotal - desconto;
-        }
+        public decimal CalcularValorDesconto() => CalcularSubtotal() * CalcularDescontoPercentual();
+
+        public decimal CalcularTotalFinal() => CalcularSubtotal() - CalcularValorDesconto();
     }
 }
