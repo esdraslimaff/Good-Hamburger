@@ -7,5 +7,5 @@ using System.Threading.Tasks;
 
 namespace GoodHamburger.Shared.DTOs
 {
-    public record ItemCardapioDto(Guid Id, string Nome, decimal Preco, TipoItem Tipo);
+    public record ItemCardapioDto(Guid Id, string Nome, decimal PrecoUnitario, TipoItem Tipo);
 }

@@ -27,9 +27,6 @@ namespace GoodHamburger.Infra.Mappings
             builder.Property(pi => pi.Tipo)
                    .IsRequired();
 
-            builder.Property(pi => pi.Quantidade)
-               .IsRequired();
-
             builder.Property(pi => pi.ProdutoId)
                    .IsRequired();
         }

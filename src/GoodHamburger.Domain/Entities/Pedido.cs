@@ -34,7 +34,7 @@ namespace GoodHamburger.Domain.Entities
             RegistrarAlteracao();
         }
 
-        public void ProcessarPedido(IEnumerable<RegraDesconto> regrasAtivas)
+        public void ProcessarPedido(IEnumerable<Promocao> regrasAtivas)
         {
             DescontoPercentual = CalcularDescontoPercentual(regrasAtivas);
             ValorDesconto = Subtotal * DescontoPercentual;
@@ -43,7 +43,7 @@ namespace GoodHamburger.Domain.Entities
             RegistrarAlteracao();
         }
 
-        private decimal CalcularDescontoPercentual(IEnumerable<RegraDesconto> regrasAtivas)
+        private decimal CalcularDescontoPercentual(IEnumerable<Promocao> regrasAtivas)
         {
             var tiposNoPedido = _itens.Select(i => i.Tipo).ToList();
 

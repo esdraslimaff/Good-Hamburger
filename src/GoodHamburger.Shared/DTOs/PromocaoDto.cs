@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace GoodHamburger.Shared.DTOs
 {
-    public class RegraDescontoDto
+    public class PromocaoDto
     {
         public string Nome { get; set; } = string.Empty;
         public decimal Percentual { get; set; }

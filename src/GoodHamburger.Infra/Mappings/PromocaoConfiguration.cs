@@ -10,11 +10,11 @@ using System.Threading.Tasks;
 
 namespace GoodHamburger.Infra.Mappings
 {
-    public class RegraDescontoConfiguration : IEntityTypeConfiguration<RegraDesconto>
+    public class PromocaoConfiguration : IEntityTypeConfiguration<Promocao>
     {
-        public void Configure(EntityTypeBuilder<RegraDesconto> builder)
+        public void Configure(EntityTypeBuilder<Promocao> builder)
         {
-            builder.ToTable("RegrasDesconto");
+            builder.ToTable("Promocao");
 
             builder.HasKey(r => r.Id);
 
@@ -34,7 +34,7 @@ namespace GoodHamburger.Infra.Mappings
 
             builder.HasMany(r => r.Requisitos)
                 .WithOne()
-                .HasForeignKey("RegraDescontoId")
+                .HasForeignKey("PromocaoId")
                 .OnDelete(DeleteBehavior.Cascade);
 
             builder.HasData(

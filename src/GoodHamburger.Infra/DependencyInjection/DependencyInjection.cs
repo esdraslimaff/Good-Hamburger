@@ -22,7 +22,7 @@ namespace GoodHamburger.Infra.DependencyInjection
 
             services.AddScoped<IItemRepository, ItemRepository>();
             services.AddScoped<IPedidoRepository, PedidoRepository>();
-            services.AddScoped<IRegraDescontoRepository, RegraDescontoRepository>();
+            services.AddScoped<IPromocaoRepository, PromocaoRepository>();
 
             return services;
         }

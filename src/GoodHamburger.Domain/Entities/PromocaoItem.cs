@@ -7,14 +7,14 @@ using System.Threading.Tasks;
 
 namespace GoodHamburger.Domain.Entities
 {
-    public class RegraDescontoItem:BaseEntity
+    public class PromocaoItem:BaseEntity
     {
-        public Guid RegraDescontoId { get; private set; }
+        public Guid PromocaoId { get; private set; }
         public TipoItem TipoItem { get; private set; }
 
-        protected RegraDescontoItem() { }
+        protected PromocaoItem() { }
 
-        public RegraDescontoItem(TipoItem tipo)
+        public PromocaoItem(TipoItem tipo)
         {
             TipoItem = tipo;
         }

@@ -6,11 +6,11 @@ namespace GoodHamburger.WebAPI.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    public class RegrasDescontoController : ControllerBase
+    public class PromocaoController : ControllerBase
     {
-        private readonly IRegraDescontoRepository _repository;
+        private readonly IPromocaoRepository _repository;
 
-        public RegrasDescontoController(IRegraDescontoRepository repository)
+        public PromocaoController(IPromocaoRepository repository)
             => _repository = repository;
 
         [HttpGet]
@@ -18,7 +18,7 @@ namespace GoodHamburger.WebAPI.Controllers
         {
             var regras = await _repository.ObterTodasAtivasAsync();
 
-            var dtos = regras.Select(r => new RegraDescontoDto
+            var dtos = regras.Select(r => new PromocaoDto
             {
                 Nome = r.Nome,
                 Percentual = r.Percentual,

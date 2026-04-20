@@ -18,13 +18,13 @@ namespace GoodHamburger.Application.Services
     {
         private readonly IPedidoRepository _pedidoRepository;
         private readonly IItemRepository _itemRepository;
-        private readonly IRegraDescontoRepository _regraRepository;
+        private readonly IPromocaoRepository _promocao;
         private readonly IValidator<PedidoRequest> _validator;
-        public PedidoAppService(IPedidoRepository pedidoRepository, IItemRepository itemRepository, IRegraDescontoRepository regraDescontoRepository , IValidator<PedidoRequest> validator)
+        public PedidoAppService(IPedidoRepository pedidoRepository, IItemRepository itemRepository, IPromocaoRepository Promocao , IValidator<PedidoRequest> validator)
         {
             _pedidoRepository = pedidoRepository;
             _itemRepository = itemRepository;
-            _regraRepository = regraDescontoRepository;
+            _promocao = Promocao;
             _validator = validator;
         }
 
@@ -44,7 +44,7 @@ namespace GoodHamburger.Application.Services
                 novoPedido.AdicionarProduto(item);
             }
 
-            var regrasAtivas = await _regraRepository.ObterTodasAtivasAsync();
+            var regrasAtivas = await _promocao.ObterTodasAtivasAsync();
 
             novoPedido.ProcessarPedido(regrasAtivas);
 

@@ -7,18 +7,18 @@ using System.Threading.Tasks;
 
 namespace GoodHamburger.Domain.Entities
 {
-    public class RegraDesconto : BaseEntity
+    public class Promocao : BaseEntity
     {
         public string? Nome { get; private set; }
         public decimal Percentual { get; private set; }
         public bool Ativo { get; private set; }
 
-        private readonly List<RegraDescontoItem> _requisitos = new();
-        public IReadOnlyCollection<RegraDescontoItem> Requisitos => _requisitos.AsReadOnly();
+        private readonly List<PromocaoItem> _requisitos = new();
+        public IReadOnlyCollection<PromocaoItem> Requisitos => _requisitos.AsReadOnly();
 
-        protected RegraDesconto() { }
+        protected Promocao() { }
 
-        public RegraDesconto(string nome, decimal percentual)
+        public Promocao(string nome, decimal percentual)
         {
             Nome = nome;
             Percentual = percentual;
@@ -34,7 +34,7 @@ namespace GoodHamburger.Domain.Entities
 
         public void AdicionarRequisito(TipoItem tipo)
         {
-            _requisitos.Add(new RegraDescontoItem(tipo));
+            _requisitos.Add(new PromocaoItem(tipo));
         }
     }
 }

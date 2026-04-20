@@ -7,8 +7,8 @@ using System.Threading.Tasks;
 
 namespace GoodHamburger.Domain.Interfaces.Repository
 {
-    public interface IRegraDescontoRepository
+    public interface IPromocaoRepository
     {
-        Task<IEnumerable<RegraDesconto>> ObterTodasAtivasAsync();
+        Task<IEnumerable<Promocao>> ObterTodasAtivasAsync();
     }
 }

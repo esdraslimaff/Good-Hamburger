@@ -10,18 +10,18 @@ using System.Threading.Tasks;
 
 namespace GoodHamburger.Infra.Repositories
 {
-    public class RegraDescontoRepository : IRegraDescontoRepository
+    public class PromocaoRepository : IPromocaoRepository
     {
         private readonly AppDbContext _context;
 
-        public RegraDescontoRepository(AppDbContext context)
+        public PromocaoRepository(AppDbContext context)
         {
             _context = context;
         }
 
-        public async Task<IEnumerable<RegraDesconto>> ObterTodasAtivasAsync()
+        public async Task<IEnumerable<Promocao>> ObterTodasAtivasAsync()
         {
-            return await _context.RegrasDesconto
+            return await _context.Promocao
                         .Include(r=>r.Requisitos)
                         .Where(x => x.Ativo)
                         .AsNoTracking()
