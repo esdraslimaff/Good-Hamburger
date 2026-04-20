@@ -1,0 +1,73 @@
+﻿@using GoodHamburger.Shared.DTOs
+@using GoodHamburger.Domain.Enums
+
+<div class="card border-primary shadow">
+    <div class="card-header bg-primary text-white">
+        <h5 class="mb-0">Sua Bandeja 🍔</h5>
+    </div>
+    <div class="card-body">
+        @if (!ItensNoCarrinho.Any())
+        {
+            <p class="text-muted text-center my-4">Sua bandeja está vazia.</p>
+        }
+        else
+        {
+            <ul class="list-group list-group-flush mb-3">
+                @foreach (var item in ItensNoCarrinho)
+                {
+                    <li class="list-group-item d-flex justify-content-between align-items-center px-0">
+                        <div>
+                            <span class="fw-bold">@item.Nome</span><br />
+                            <small class="text-muted">@item.PrecoUnitario.ToString("C")</small>
+                        </div>
+                        <button class="btn btn-sm btn-outline-danger border-0"
+                                @onclick="() => OnRemover.InvokeAsync(item)">
+                            <i class="bi bi-trash"></i> Remover
+                        </button>
+                    </li>
+                }
+            </ul>
+
+            <div class="border-top pt-3">
+                <div class="d-flex justify-content-between small">
+                    <span>Subtotal</span>
+                    <span>@Subtotal.ToString("C")</span>
+                </div>
+
+                @if (PercentualDesconto > 0)
+                {
+                    <div class="d-flex justify-content-between text-success small">
+                        <span>Desconto (@((PercentualDesconto * 100).ToString("N0"))%)</span>
+                        <span>- @ValorDesconto.ToString("C")</span>
+                    </div>
+                }
+
+                <div class="d-flex justify-content-between fw-bold fs-5 mt-2">
+                    <span>Total</span>
+                    <span>@TotalFinal.ToString("C")</span>
+                </div>
+            </div>
+
+            @if (!string.IsNullOrEmpty(MensagemErro))
+            {
+                <div class="alert alert-warning p-2 mt-3 small">
+                    <i class="bi bi-exclamation-triangle"></i> @MensagemErro
+                </div>
+            }
+
+            <button class="btn btn-success w-100 mt-3 py-2 fw-bold"
+                    @onclick="OnFinalizar"
+                    disabled="@Processando">
+                @if (Processando)
+                {
+                    <span class="spinner-border spinner-border-sm"></span>
+                    <span> Processando...</span>
+                }
+                else
+                {
+                    <span>FECHAR PEDIDO 🚀</span>
+                }
+            </button>
+        }
+    </div>
+</div>

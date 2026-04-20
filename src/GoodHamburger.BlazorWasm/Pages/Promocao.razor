@@ -1,0 +1,25 @@
+﻿@page "/promocoes"
+@using GoodHamburger.BlazorWasm.Components
+
+<div class="container mt-4">
+    <div class="text-center mb-5">
+        <h2 class="display-5 fw-bold text-danger">Ofertas Irresistíveis! 🔥</h2>
+        <p class="lead">Combine e economize na Good Hamburger.</p>
+    </div>
+
+    @if (Promocoes == null)
+    {
+        <div class="text-center">
+            <div class="spinner-grow text-danger" role="status"></div>
+        </div>
+    }
+    else
+    {
+        <div class="row justify-content-center">
+    @foreach (var promo in Promocoes)
+    {
+        <PromocaoCard Promocao="promo" />
+    }
+        </div>
+    }
+</div>

@@ -12,5 +12,11 @@ namespace GoodHamburger.Shared.DTOs
         public string Nome { get; set; } = string.Empty;
         public decimal Percentual { get; set; }
         public List<TipoItem> Requisitos { get; set; } = new();
+
+        public PromocaoDto()
+        {
+            
+        }
+
     }
 }

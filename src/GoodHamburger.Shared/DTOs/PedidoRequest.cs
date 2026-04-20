@@ -9,5 +9,11 @@ namespace GoodHamburger.Shared.DTOs
     public class PedidoRequest
     {
         public List<Guid> ItensIds { get; set; } = new();
+       
+        public PedidoRequest() { }
+        public PedidoRequest(List<Guid> itensIds)
+        {
+            ItensIds = itensIds;
+        }
     }
 }
