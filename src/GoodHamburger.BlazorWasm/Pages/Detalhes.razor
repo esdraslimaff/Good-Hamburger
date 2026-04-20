@@ -29,7 +29,10 @@
 
                 <div class="text-end">
                     <p>Subtotal: R$ @Pedido.Subtotal.ToString("F2")</p>
-                    <p class="text-success">Desconto (@Pedido.DescontoPercentual%): - R$ @Pedido.ValorDesconto.ToString("F2")</p>
+                    <p class="text-success">
+                        Desconto (@Pedido.DescontoPercentual.ToString("P0")):
+                        - R$ @Pedido.ValorDesconto.ToString("F2")
+                    </p>
                     <h4 class="fw-bold text-primary">Total Final: R$ @Pedido.TotalFinal.ToString("F2")</h4>
                 </div>
             }
