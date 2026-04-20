@@ -22,8 +22,9 @@ namespace GoodHamburger.Infra.Mappings
             navigation?.SetPropertyAccessMode(PropertyAccessMode.Field);
 
             builder.HasMany(p => p.Itens)
-                   .WithMany()
-                   .UsingEntity(j => j.ToTable("PedidoItens"));
+                   .WithOne()
+                   .HasForeignKey("PedidoId")
+                   .OnDelete(DeleteBehavior.Cascade);
         }
     }
 }

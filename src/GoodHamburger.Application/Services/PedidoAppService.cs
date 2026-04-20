@@ -3,6 +3,7 @@ using GoodHamburger.Application.Interfaces;
 using GoodHamburger.Domain.Entities;
 using GoodHamburger.Domain.Exceptions;
 using GoodHamburger.Domain.Interfaces;
+using GoodHamburger.Domain.Interfaces.Repository;
 using GoodHamburger.Shared.DTOs;
 using Mapster;
 using System;
@@ -17,11 +18,13 @@ namespace GoodHamburger.Application.Services
     {
         private readonly IPedidoRepository _pedidoRepository;
         private readonly IItemRepository _itemRepository;
+        private readonly IRegraDescontoRepository _regraRepository;
         private readonly IValidator<PedidoRequest> _validator;
-        public PedidoAppService(IPedidoRepository pedidoRepository, IItemRepository itemRepository, IValidator<PedidoRequest> validator)
+        public PedidoAppService(IPedidoRepository pedidoRepository, IItemRepository itemRepository, IRegraDescontoRepository regraDescontoRepository , IValidator<PedidoRequest> validator)
         {
             _pedidoRepository = pedidoRepository;
             _itemRepository = itemRepository;
+            _regraRepository = regraDescontoRepository;
             _validator = validator;
         }
 
@@ -29,26 +32,24 @@ namespace GoodHamburger.Application.Services
         {
             var validationResult = await _validator.ValidateAsync(request);
             if (!validationResult.IsValid)
-            {
-                var firstError = validationResult.Errors.First().ErrorMessage;
-                throw new DomainException(firstError);
-            }
+                throw new DomainException(validationResult.Errors.First().ErrorMessage);
 
             var itensNoBanco = await _itemRepository.GetItensPorIdsAsync(request.ItensIds);
-
             if (itensNoBanco.Count() != request.ItensIds.Distinct().Count())
-            {
-                throw new DomainException("Um ou mais itens selecionados são inválidos ou não existem no cardápio.");
-            }
+                throw new DomainException("Um ou mais itens selecionados são inválidos.");
 
             var novoPedido = new Pedido();
-
             foreach (var item in itensNoBanco)
             {
-                novoPedido.AdicionarItem(item);
+                novoPedido.AdicionarProduto(item);
             }
 
+            var regrasAtivas = await _regraRepository.ObterTodasAtivasAsync();
+
+            novoPedido.ProcessarPedido(regrasAtivas);
+
             await _pedidoRepository.AddAsync(novoPedido);
+
             return novoPedido.Adapt<PedidoResponse>();
         }
 

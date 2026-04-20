@@ -1,4 +1,5 @@
 ﻿using GoodHamburger.Domain.Interfaces;
+using GoodHamburger.Domain.Interfaces.Repository;
 using GoodHamburger.Infra.Data;
 using GoodHamburger.Infra.Repositories;
 using Microsoft.EntityFrameworkCore;
@@ -21,6 +22,7 @@ namespace GoodHamburger.Infra.DependencyInjection
 
             services.AddScoped<IItemRepository, ItemRepository>();
             services.AddScoped<IPedidoRepository, PedidoRepository>();
+            services.AddScoped<IRegraDescontoRepository, RegraDescontoRepository>();
 
             return services;
         }

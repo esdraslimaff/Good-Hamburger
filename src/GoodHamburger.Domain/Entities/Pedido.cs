@@ -10,39 +10,49 @@ namespace GoodHamburger.Domain.Entities
 {
     public class Pedido : BaseEntity
     {
-        private readonly List<Item> _itens = new();
-        public IReadOnlyCollection<Item> Itens => _itens.AsReadOnly();
+        private readonly List<PedidoItem> _itens = new();
+        public IReadOnlyCollection<PedidoItem> Itens => _itens.AsReadOnly();
+        public decimal Subtotal { get; private set; }
+        public decimal DescontoPercentual { get; private set; }
+        public decimal ValorDesconto { get; private set; }
+        public decimal TotalFinal { get; private set; }
 
         public Pedido() : base() { }
 
-        public void AdicionarItem(Item item)
+        public void AdicionarProduto(Item produto)
         {
-            if (_itens.Any(i => i.Tipo == item.Tipo))
-            {
-                throw new DomainException($"O pedido já contém um item do tipo {item.Tipo}.");
-            }
+            if (_itens.Any(i => i.Tipo == produto.Tipo))
+                throw new DomainException($"O pedido já contém um item do tipo {produto.Tipo}.");
 
-            _itens.Add(item);
+            if (_itens.Count >= 3)
+                throw new DomainException("O pedido já atingiu o limite máximo de 3 itens.");
+
+            _itens.Add(new PedidoItem(produto));
+
+            Subtotal = _itens.Sum(i => i.PrecoUnitario);
+
             RegistrarAlteracao();
         }
 
-        public decimal CalcularSubtotal() => _itens.Sum(i => i.Preco);
-
-        public decimal CalcularDescontoPercentual()
+        public void ProcessarPedido(IEnumerable<RegraDesconto> regrasAtivas)
         {
-            var temSanduiche = _itens.Any(i => i.Tipo == TipoItem.Sanduiche);
-            var temBatata = _itens.Any(i => i.Tipo == TipoItem.Acompanhamento);
-            var temRefri = _itens.Any(i => i.Tipo == TipoItem.Bebida);
+            DescontoPercentual = CalcularDescontoPercentual(regrasAtivas);
+            ValorDesconto = Subtotal * DescontoPercentual;
+            TotalFinal = Subtotal - ValorDesconto;
 
-            if (temSanduiche && temBatata && temRefri) return 0.20m;
-            if (temSanduiche && temRefri) return 0.15m;
-            if (temSanduiche && temBatata) return 0.10m;
-
-            return 0m;
+            RegistrarAlteracao();
         }
 
-        public decimal CalcularValorDesconto() => CalcularSubtotal() * CalcularDescontoPercentual();
+        private decimal CalcularDescontoPercentual(IEnumerable<RegraDesconto> regrasAtivas)
+        {
+            var tiposNoPedido = _itens.Select(i => i.Tipo).ToList();
 
-        public decimal CalcularTotalFinal() => CalcularSubtotal() - CalcularValorDesconto();
+            var melhorRegra = regrasAtivas
+                .Where(r => r.SeAplica(tiposNoPedido))
+                .OrderByDescending(r => r.Percentual)
+                .FirstOrDefault();
+
+            return melhorRegra?.Percentual ?? 0m;
+        }
     }
 }

@@ -17,8 +17,21 @@ builder.Services.AddApplication();
 builder.Services.AddValidatorsFromAssemblyContaining<PedidoRequestValidator>();
 builder.Services.AddControllers();
 
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowBlazor",
+        policy =>
+        {
+            policy
+                .WithOrigins("https://localhost:7203")
+                .AllowAnyHeader()
+                .AllowAnyMethod();
+        });
+});
 
 var app = builder.Build();
+
+app.UseCors("AllowBlazor");
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
@@ -40,7 +53,7 @@ var summaries = new[]
 
 app.MapGet("/weatherforecast", () =>
 {
-    var forecast =  Enumerable.Range(1, 5).Select(index =>
+    var forecast = Enumerable.Range(1, 5).Select(index =>
         new WeatherForecast
         (
             DateOnly.FromDateTime(DateTime.Now.AddDays(index)),
