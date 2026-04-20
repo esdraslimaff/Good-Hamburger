@@ -20,7 +20,7 @@ namespace GoodHamburger.Domain.Entities
         {
             ProdutoId = item.Id;
             Nome = item.Nome;
-            PrecoUnitario = item.Preco;
+            PrecoUnitario = item.PrecoUnitario;
             Tipo = item.Tipo;
         }
     }

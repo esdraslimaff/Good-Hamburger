@@ -10,15 +10,15 @@ namespace GoodHamburger.Domain.Entities
     public class Item : BaseEntity
     {
         public string Nome { get; private set; }
-        public decimal Preco { get; private set; }
+        public decimal PrecoUnitario { get; private set; }
         public TipoItem Tipo { get; private set; }
 
         protected Item() { }
 
-        public Item(string nome, decimal preco, TipoItem tipo)
+        public Item(string nome, decimal precoUnitario, TipoItem tipo)
         {
             Nome = nome;
-            Preco = preco;
+            PrecoUnitario = precoUnitario;
             Tipo = tipo;
         }
     }
