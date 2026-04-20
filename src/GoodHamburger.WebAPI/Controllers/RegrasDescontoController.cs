@@ -22,7 +22,9 @@ namespace GoodHamburger.WebAPI.Controllers
             {
                 Nome = r.Nome,
                 Percentual = r.Percentual,
-                Requisitos = r.Requisitos.ToList()
+                Requisitos = r.Requisitos
+                .Select(x => x.TipoItem)
+                .ToList()
             });
 
             return Ok(dtos);

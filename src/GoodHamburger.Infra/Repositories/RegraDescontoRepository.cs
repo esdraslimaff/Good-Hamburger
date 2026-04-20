@@ -22,6 +22,7 @@ namespace GoodHamburger.Infra.Repositories
         public async Task<IEnumerable<RegraDesconto>> ObterTodasAtivasAsync()
         {
             return await _context.RegrasDesconto
+                        .Include(r=>r.Requisitos)
                         .Where(x => x.Ativo)
                         .AsNoTracking()
                         .ToListAsync();
