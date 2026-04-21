@@ -14,6 +14,8 @@ namespace GoodHamburger.Application.DependencyInjection
         public static IServiceCollection AddApplication(this IServiceCollection services)
         {
             services.AddScoped<IPedidoAppService, PedidoAppService>();
+            services.AddScoped<ICardapioService, CardapioService>();
+            services.AddScoped<IPromocaoService, PromocaoService>();
 
             return services;
         }

@@ -1,4 +1,5 @@
-﻿using GoodHamburger.Domain.Interfaces;
+﻿using GoodHamburger.Application.Interfaces;
+using GoodHamburger.Domain.Interfaces;
 using GoodHamburger.Shared.DTOs;
 using Mapster;
 using Microsoft.AspNetCore.Http;
@@ -10,18 +11,18 @@ namespace GoodHamburger.WebAPI.Controllers
     [ApiController]
     public class CardapioController : ControllerBase
     {
-        private readonly IItemRepository _itemRepository;
+        private readonly ICardapioService _service;
 
-        public CardapioController(IItemRepository itemRepository)
+        public CardapioController(ICardapioService service)
         {
-            _itemRepository = itemRepository;
+            _service = service;
         }
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<ItemCardapioDto>>> Get()
+        public async Task<IActionResult> Get()
         {
-            var itens = await _itemRepository.GetAllAsync();
-            return Ok(itens.Adapt<IEnumerable<ItemCardapioDto>>());
+            var itens = await _service.ObterItensAsync();
+            return Ok(itens);
         }
     }
 }
