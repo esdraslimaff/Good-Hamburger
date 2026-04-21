@@ -48,5 +48,9 @@ namespace GoodHamburger.Infra.Repositories
             DbSet.Remove(entity);
             await Context.SaveChangesAsync();
         }
+        public virtual Task SaveChangesAsync()
+        {
+            return Context.SaveChangesAsync();
+        }
     }
 }

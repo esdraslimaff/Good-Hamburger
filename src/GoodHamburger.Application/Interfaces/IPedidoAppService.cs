@@ -13,5 +13,6 @@ namespace GoodHamburger.Application.Interfaces
         Task<IEnumerable<PedidoResponse>> ListarTodosAsync();
         Task<PedidoResponse?> ObterPorIdAsync(Guid id);
         Task RemoverAsync(Guid id);
+        Task AtualizarPedidoAsync(Guid id, PedidoRequest request);
     }
 }

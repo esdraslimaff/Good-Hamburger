@@ -39,5 +39,19 @@ namespace GoodHamburger.WebAPI.Controllers
             var pedidos = await _pedidoAppService.ListarTodosAsync();
             return Ok(pedidos);
         }
+
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> Delete(Guid id)
+        {
+            await _pedidoAppService.RemoverAsync(id);
+            return NoContent();
+        }
+
+        [HttpPut("{id}")]
+        public async Task<IActionResult> Update(Guid id, [FromBody] PedidoRequest request)
+        {
+            await _pedidoAppService.AtualizarPedidoAsync(id, request);
+            return NoContent();
+        }
     }
 }

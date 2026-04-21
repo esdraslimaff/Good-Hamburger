@@ -73,5 +73,37 @@ namespace GoodHamburger.Application.Services
                 await _pedidoRepository.DeleteAsync(pedido);
             }
         }
+        public async Task AtualizarPedidoAsync(Guid id, PedidoRequest request)
+        {
+            var pedido = await _pedidoRepository.GetPedidoComItensAsync(id);
+            if (pedido == null) throw new DomainException("Pedido não encontrado.");
+
+            var idsDesejados = request.ItensIds.ToList();
+
+            var idsAtuais = pedido.Itens.Select(i => i.Id).ToList();
+
+            var idsParaRemover = idsAtuais.Except(idsDesejados).ToList();
+
+            var idsParaAdicionar = idsDesejados.Except(idsAtuais).ToList();
+
+            foreach (var idRemover in idsParaRemover)
+            {
+                pedido.RemoverProduto(idRemover);
+            }
+
+            if (idsParaAdicionar.Any())
+            {
+                var produtosNovos = await _itemRepository.GetItensPorIdsAsync(idsParaAdicionar);
+                foreach (var produto in produtosNovos)
+                {
+                    pedido.AdicionarProduto(produto);
+                }
+            }
+
+            var regrasAtivas = await _promocao.ObterTodasAtivasAsync();
+            pedido.ProcessarPedido(regrasAtivas);
+
+            await _pedidoRepository.SaveChangesAsync();
+        }
     }
 }

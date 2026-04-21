@@ -43,6 +43,17 @@ namespace GoodHamburger.Domain.Entities
             RegistrarAlteracao();
         }
 
+        public void RemoverProduto(Guid produtoId)
+        {
+            var item = _itens.FirstOrDefault(i => i.Id == produtoId);
+            if (item != null)
+            {
+                _itens.Remove(item);
+                Subtotal = _itens.Sum(i => i.PrecoUnitario);
+                RegistrarAlteracao();
+            }
+        }
+
         private decimal CalcularDescontoPercentual(IEnumerable<Promocao> regrasAtivas)
         {
             var tiposNoPedido = _itens.Select(i => i.Tipo).ToList();
