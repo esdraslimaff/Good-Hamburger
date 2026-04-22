@@ -8,5 +8,6 @@ namespace GoodHamburger.BlazorWasm.Services.Interfaces
         Task<List<PedidoResponse>> GetTodosAsync();
         Task<PedidoResponse> GetPorIdAsync(Guid id);
         Task DeletarAsync(Guid id);
+        Task AtualizarAsync(Guid id, PedidoRequest request);
     }
 }

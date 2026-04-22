@@ -1,6 +1,7 @@
 ﻿using GoodHamburger.BlazorWasm.Services.Interfaces;
 using GoodHamburger.Shared.DTOs;
 using Microsoft.AspNetCore.Components;
+using Microsoft.JSInterop;
 
 namespace GoodHamburger.BlazorWasm.Pages
 {
@@ -8,6 +9,7 @@ namespace GoodHamburger.BlazorWasm.Pages
     {
         [Inject] public IPedidoService PedidoService { get; set; }
         [Inject] public NavigationManager Nav { get; set; }
+        [Inject] public IJSRuntime JS { get; set; }
 
         protected List<PedidoResponse> ListaPedidos;
 
@@ -24,12 +26,17 @@ namespace GoodHamburger.BlazorWasm.Pages
 
         protected void VerDetalhes(Guid id) => Nav.NavigateTo($"/pedidos/{id}");
 
+        protected void IrParaEditar(Guid id) => Nav.NavigateTo($"/pedidos/editar/{id}");
         protected async Task ConfirmarExclusao(Guid id)
         {
-            return;
-            //TO-DO: CONFIGURA EXCLUSÃO
-            //await PedidoService.DeletarAsync(id);
-            //await CarregarPedidos();
+            var confirmado = await JS.InvokeAsync<bool>("confirm", "Deseja realmente excluir este pedido?");
+
+            if (confirmado)
+            {
+                await PedidoService.DeletarAsync(id);
+                await CarregarPedidos();
+            }
         }
+        //TO-DO: SUBSTITUIR ESSE JS POR MODAL
     }
 }

@@ -9,14 +9,13 @@ namespace GoodHamburger.BlazorWasm.Pages
         [Inject] public IPromocaoService PromocaoService { get; set; }
         [Inject] public NavigationManager Nav { get; set; }
 
-        protected List<PromocaoDto> Promocoes;
+        protected List<PromocaoDto> Promocoes { get; set; }
 
         protected override async Task OnInitializedAsync()
         {
             try
             {
                 Promocoes = await PromocaoService.GetPromocoesAsync();
-                Console.WriteLine("ababa");
             }
             catch (Exception)
             {

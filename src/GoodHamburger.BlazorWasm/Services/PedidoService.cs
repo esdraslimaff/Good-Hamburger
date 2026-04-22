@@ -24,5 +24,15 @@ namespace GoodHamburger.BlazorWasm.Services
 
         public async Task DeletarAsync(Guid id)
             => await _http.DeleteAsync($"api/Pedidos/{id}");
+
+        public async Task AtualizarAsync(Guid id, PedidoRequest request)
+        {
+            var response = await _http.PutAsJsonAsync($"api/pedidos/{id}", request);
+            if (!response.IsSuccessStatusCode)
+            {
+                var erro = await response.Content.ReadAsStringAsync();
+                throw new Exception(erro);
+            }
+        }
     }
 }

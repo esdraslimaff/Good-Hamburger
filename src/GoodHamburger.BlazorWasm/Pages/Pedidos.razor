@@ -66,12 +66,18 @@
                             <td class="text-center">
                                 <div class="btn-group">
                                     <button class="btn btn-sm btn-outline-info"
-                                            @onclick="() => VerDetalhes(pedido.Id)" title="Ver Detalhes">
-                                        👁️
+                                            @onclick="() => VerDetalhes(pedido.Id)">
+                                        Detalhes
                                     </button>
+
+                                    <button class="btn btn-sm btn-outline-warning"
+                                            @onclick="() => IrParaEditar(pedido.Id)">
+                                        Editar
+                                    </button>
+
                                     <button class="btn btn-sm btn-outline-danger"
-                                            @onclick="() => ConfirmarExclusao(pedido.Id)" title="Excluir Pedido">
-                                        🗑️
+                                            @onclick="() => ConfirmarExclusao(pedido.Id)">
+                                        Excluir
                                     </button>
                                 </div>
                             </td>
