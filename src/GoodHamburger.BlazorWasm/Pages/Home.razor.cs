@@ -1,4 +1,6 @@
-﻿using GoodHamburger.BlazorWasm.Services.Interfaces;
+﻿using GoodHamburger.BlazorWasm.Models; // Certifique-se de ter este using
+using GoodHamburger.BlazorWasm.Services; // Para a CalculadoraPedidoService
+using GoodHamburger.BlazorWasm.Services.Interfaces;
 using GoodHamburger.Domain.Enums;
 using GoodHamburger.Shared.DTOs;
 using Microsoft.AspNetCore.Components;
@@ -9,19 +11,32 @@ namespace GoodHamburger.BlazorWasm.Pages
     {
         [Inject] public ICardapioService CardapioService { get; set; }
         [Inject] public IPedidoService PedidoService { get; set; }
+        [Inject] public IPromocaoService PromocaoService { get; set; }
         [Inject] public NavigationManager Nav { get; set; }
-        protected IEnumerable<IGrouping<TipoItem, ItemCardapioDto>> ItensAgrupados => ItensCardapio?.GroupBy(x => x.Tipo) ?? Enumerable.Empty<IGrouping<TipoItem, ItemCardapioDto>>();
 
         protected List<ItemCardapioDto> ItensCardapio;
+        protected List<PromocaoDto> Promocoes = new();
         protected List<ItemCardapioDto> Carrinho = new();
+        protected PedidoResumo Resumo = new();
         protected string MensagemErro;
         protected bool Processando = false;
+
+        protected IEnumerable<IGrouping<TipoItem, ItemCardapioDto>> ItensAgrupados =>
+            ItensCardapio?.GroupBy(x => x.Tipo) ?? Enumerable.Empty<IGrouping<TipoItem, ItemCardapioDto>>();
 
         protected override async Task OnInitializedAsync()
         {
             try
             {
-                ItensCardapio = await CardapioService.GetItensAsync();
+                var taskCardapio = CardapioService.GetItensAsync();
+                var taskPromocoes = PromocaoService.GetPromocoesAsync();
+
+                await Task.WhenAll(taskCardapio, taskPromocoes);
+
+                ItensCardapio = await taskCardapio ?? new();
+                Promocoes = await taskPromocoes ?? new();
+
+                AtualizarEstado();
             }
             catch (Exception)
             {
@@ -35,7 +50,7 @@ namespace GoodHamburger.BlazorWasm.Pages
 
             if (Carrinho.Count >= 3)
             {
-                MensagemErro = "Cada pedido pode conter apenas um sanduíche, uma batata e um refrigerante.";
+                MensagemErro = "Cada pedido pode conter no máximo 3 itens.";
                 return;
             }
 
@@ -46,26 +61,38 @@ namespace GoodHamburger.BlazorWasm.Pages
             }
 
             Carrinho.Add(item);
+            AtualizarEstado();
         }
 
         protected void RemoverDoCarrinho(ItemCardapioDto item)
         {
             Carrinho.Remove(item);
             MensagemErro = string.Empty;
+            AtualizarEstado();
+        }
+
+        private void AtualizarEstado()
+        {
+            Resumo = CalculadoraPedidoService.Calcular(Carrinho, Promocoes);
+            StateHasChanged();
         }
 
         protected async Task FinalizarPedido()
         {
+            if (!Carrinho.Any())
+            {
+                MensagemErro = "Sua bandeja está vazia!";
+                return;
+            }
+
             try
             {
                 Processando = true;
                 var request = new PedidoRequest(Carrinho.Select(x => x.Id).ToList());
-
                 var resultado = await PedidoService.CriarPedidoAsync(request);
 
                 if (resultado != null)
                 {
-                    // Navega para uma tela de sucesso ou detalhes do pedido
                     Nav.NavigateTo($"/pedidos/{resultado.Id}");
                 }
             }

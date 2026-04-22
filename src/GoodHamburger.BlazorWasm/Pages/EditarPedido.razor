@@ -1,9 +1,6 @@
 ﻿@page "/pedidos/editar/{Id:guid}"
 @using GoodHamburger.Shared.DTOs
 @using GoodHamburger.BlazorWasm.Components
-@inject GoodHamburger.BlazorWasm.Services.Interfaces.IPedidoService PedidoService
-@inject GoodHamburger.BlazorWasm.Services.Interfaces.ICardapioService CardapioService
-@inject NavigationManager Nav
 
 <div class="container mt-4">
     @if (Carregando)
@@ -43,6 +40,7 @@
             <div class="col-md-4">
                 <div class="sticky-top" style="top: 20px;">
                     <CarrinhoResumo ItensNoCarrinho="ItensNoCarrinho"
+                                    Resumo = "Resumo"
                                     Processando="Processando"
                                     MensagemErro="@MensagemErro"
                                     OnRemover="RemoverDoCarrinho"

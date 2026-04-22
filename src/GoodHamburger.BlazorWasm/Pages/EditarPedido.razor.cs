@@ -1,4 +1,7 @@
-﻿using GoodHamburger.Domain.Enums;
+﻿using GoodHamburger.BlazorWasm.Models;
+using GoodHamburger.BlazorWasm.Services;
+using GoodHamburger.BlazorWasm.Services.Interfaces;
+using GoodHamburger.Domain.Enums;
 using GoodHamburger.Shared.DTOs;
 using Microsoft.AspNetCore.Components;
 
@@ -7,13 +10,25 @@ namespace GoodHamburger.BlazorWasm.Pages
     public partial class EditarPedido
     {
         [Parameter] public Guid Id { get; set; }
-        protected PedidoRequest Request { get; set; } = new() { ItensIds = new List<Guid>() };
-        protected List<ItemCardapioDto> ItensNoCarrinho { get; set; } = new();
-        protected List<ItemCardapioDto> ItensCardapio { get; set; } = new();
-        protected IEnumerable<IGrouping<TipoItem, ItemCardapioDto>> ItensAgrupados => ItensCardapio?.GroupBy(x => x.Tipo) ?? Enumerable.Empty<IGrouping<TipoItem, ItemCardapioDto>>();
+        [Inject] public ICardapioService CardapioService { get; set; }
+        [Inject] public IPedidoService PedidoService { get; set; }
+        [Inject] public IPromocaoService PromocaoService { get; set; }
+        [Inject] public NavigationManager Nav { get; set; }
+
+        protected List<ItemCardapioDto> ItensCardapio = new();
+        protected List<PromocaoDto> Promocoes = new();
+        protected List<ItemCardapioDto> ItensNoCarrinho = new();
+
+        protected PedidoResumo Resumo = new();
+
         protected bool Carregando { get; set; } = true;
         protected bool Processando { get; set; }
         protected string MensagemErro { get; set; }
+
+        protected IEnumerable<IGrouping<TipoItem, ItemCardapioDto>> ItensAgrupados =>
+            ItensCardapio?.GroupBy(x => x.Tipo) ?? Enumerable.Empty<IGrouping<TipoItem, ItemCardapioDto>>();
+
+        private decimal descontoPercentualRegistrado;
 
         protected override async Task OnInitializedAsync()
         {
@@ -21,21 +36,29 @@ namespace GoodHamburger.BlazorWasm.Pages
             {
                 Carregando = true;
 
-                var itensCardapio = await CardapioService.GetItensAsync();
-                var pedidoAtual = await PedidoService.GetPorIdAsync(Id);
+                var taskCardapio = CardapioService.GetItensAsync();
+                var taskPedido = PedidoService.GetPorIdAsync(Id);
+                var taskPromocoes = PromocaoService.GetPromocoesAsync();
 
-                if (itensCardapio != null)
-                    ItensCardapio = itensCardapio;
+                await Task.WhenAll(taskCardapio, taskPedido, taskPromocoes);
+
+                ItensCardapio = await taskCardapio ?? new();
+                Promocoes = await taskPromocoes ?? new();
+
+                var pedidoAtual = await taskPedido;
+
+                descontoPercentualRegistrado = pedidoAtual?.DescontoPercentual ?? 0;
 
                 if (pedidoAtual?.Itens != null)
                 {
                     ItensNoCarrinho = pedidoAtual.Itens.ToList();
-                    AtualizarIdsDoRequest();
                 }
+
+                AtualizarEstado();
             }
             catch (Exception ex)
             {
-                MensagemErro = "Erro ao carregar itens: " + ex.Message;
+                MensagemErro = "Erro ao carregar dados do pedido: " + ex.Message;
             }
             finally
             {
@@ -47,7 +70,7 @@ namespace GoodHamburger.BlazorWasm.Pages
             MensagemErro = string.Empty;
             if (ItensNoCarrinho.Count >= 3)
             {
-                MensagemErro = "Cada pedido pode conter apenas um sanduíche, uma batata e um refrigerante.";
+                MensagemErro = "Cada pedido pode conter no máximo 3 itens.";
                 return;
             }
 
@@ -57,33 +80,33 @@ namespace GoodHamburger.BlazorWasm.Pages
                 return;
             }
             ItensNoCarrinho.Add(item);
-            AtualizarIdsDoRequest();
-            StateHasChanged();
+            AtualizarEstado();
         }
 
         protected void RemoverDoCarrinho(ItemCardapioDto item)
         {
-
             var itemNaLista = ItensNoCarrinho.FirstOrDefault(x => x.Id == item.Id);
             if (itemNaLista != null)
             {
                 ItensNoCarrinho.Remove(itemNaLista);
             }
 
-            AtualizarIdsDoRequest();
-            StateHasChanged();
+            MensagemErro = string.Empty;
+            AtualizarEstado();
         }
 
-        private void AtualizarIdsDoRequest()
+        private void AtualizarEstado()
         {
-            Request.ItensIds = ItensNoCarrinho.Select(x => x.Id).ToList();
+            Resumo = CalculadoraPedidoService.Calcular(ItensNoCarrinho, Promocoes, descontoPercentualRegistrado, isEdicao: true
+            );
+            StateHasChanged();
         }
 
         protected async Task SalvarAlteracoes()
         {
-            if (!Request.ItensIds.Any())
+            if (!ItensNoCarrinho.Any())
             {
-                MensagemErro = "Sua bandeja não pode estar vazia para atualizar o pedido!";
+                MensagemErro = "Sua bandeja não pode estar vazia!";
                 return;
             }
 
@@ -92,7 +115,8 @@ namespace GoodHamburger.BlazorWasm.Pages
 
             try
             {
-                await PedidoService.AtualizarAsync(Id, Request);
+                var request = new PedidoRequest(ItensNoCarrinho.Select(x => x.Id).ToList());
+                await PedidoService.AtualizarAsync(Id, request);
                 Nav.NavigateTo("/pedidos");
             }
             catch (Exception ex)

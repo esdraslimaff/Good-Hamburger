@@ -25,16 +25,11 @@ namespace GoodHamburger.Domain.Entities
             Ativo = true;
         }
 
-        public bool SeAplica(List<TipoItem> itensPedido)
+        public bool SeAplica(List<TipoItem> itensPedido) 
         {
             var requisitos = _requisitos.Select(r => r.TipoItem);
-
-            return requisitos.All(r => itensPedido.Contains(r));
+            return requisitos.All(r => itensPedido.Contains(r)); 
         }
 
-        public void AdicionarRequisito(TipoItem tipo)
-        {
-            _requisitos.Add(new PromocaoItem(tipo));
-        }
     }
 }

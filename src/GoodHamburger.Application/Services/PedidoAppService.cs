@@ -75,15 +75,17 @@ namespace GoodHamburger.Application.Services
         }
         public async Task AtualizarPedidoAsync(Guid id, PedidoRequest request)
         {
+            var validationResult = await _validator.ValidateAsync(request);         
+            if (!validationResult.IsValid)
+                throw new DomainException(validationResult.Errors.First().ErrorMessage);
+
             var pedido = await _pedidoRepository.GetPedidoComItensAsync(id);
             if (pedido == null) throw new DomainException("Pedido não encontrado.");
 
             var idsDesejados = request.ItensIds.ToList();
-
             var idsAtuais = pedido.Itens.Select(i => i.Id).ToList();
 
             var idsParaRemover = idsAtuais.Except(idsDesejados).ToList();
-
             var idsParaAdicionar = idsDesejados.Except(idsAtuais).ToList();
 
             foreach (var idRemover in idsParaRemover)
@@ -99,9 +101,6 @@ namespace GoodHamburger.Application.Services
                     pedido.AdicionarProduto(produto);
                 }
             }
-
-            var regrasAtivas = await _promocao.ObterTodasAtivasAsync();
-            pedido.ProcessarPedido(regrasAtivas);
 
             await _pedidoRepository.SaveChangesAsync();
         }

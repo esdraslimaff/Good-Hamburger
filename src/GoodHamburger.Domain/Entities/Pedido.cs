@@ -3,8 +3,6 @@ using GoodHamburger.Domain.Exceptions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace GoodHamburger.Domain.Entities
 {
@@ -29,18 +27,7 @@ namespace GoodHamburger.Domain.Entities
 
             _itens.Add(new PedidoItem(produto));
 
-            Subtotal = _itens.Sum(i => i.PrecoUnitario);
-
-            RegistrarAlteracao();
-        }
-
-        public void ProcessarPedido(IEnumerable<Promocao> regrasAtivas)
-        {
-            DescontoPercentual = CalcularDescontoPercentual(regrasAtivas);
-            ValorDesconto = Subtotal * DescontoPercentual;
-            TotalFinal = Subtotal - ValorDesconto;
-
-            RegistrarAlteracao();
+            RecalcularTotais();
         }
 
         public void RemoverProduto(Guid produtoId)
@@ -49,16 +36,30 @@ namespace GoodHamburger.Domain.Entities
             if (item != null)
             {
                 _itens.Remove(item);
-                Subtotal = _itens.Sum(i => i.PrecoUnitario);
-                RegistrarAlteracao();
+                RecalcularTotais();
             }
         }
 
-        private decimal CalcularDescontoPercentual(IEnumerable<Promocao> regrasAtivas)
+        public void ProcessarPedido(IEnumerable<Promocao> regrasPromocoesAtivas)
+        {
+            DescontoPercentual = CalcularDescontoPercentual(regrasPromocoesAtivas);
+            RecalcularTotais();
+        }
+
+        private void RecalcularTotais()
+        {
+            Subtotal = _itens.Sum(i => i.PrecoUnitario);
+            ValorDesconto = Subtotal * DescontoPercentual;
+            TotalFinal = Subtotal - ValorDesconto;
+
+            RegistrarAlteracao();
+        }
+
+        private decimal CalcularDescontoPercentual(IEnumerable<Promocao> regrasPromocoesAtivas)
         {
             var tiposNoPedido = _itens.Select(i => i.Tipo).ToList();
 
-            var melhorRegra = regrasAtivas
+            var melhorRegra = regrasPromocoesAtivas
                 .Where(r => r.SeAplica(tiposNoPedido))
                 .OrderByDescending(r => r.Percentual)
                 .FirstOrDefault();
