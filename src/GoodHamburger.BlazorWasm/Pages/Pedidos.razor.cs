@@ -22,21 +22,39 @@ namespace GoodHamburger.BlazorWasm.Pages
         {
             ListaPedidos = await PedidoService.GetTodosAsync();
         }
+
         protected void IrParaNovoPedido() => Nav.NavigateTo("/");
 
         protected void VerDetalhes(Guid id) => Nav.NavigateTo($"/pedidos/{id}");
 
         protected void IrParaEditar(Guid id) => Nav.NavigateTo($"/pedidos/editar/{id}");
+
         protected async Task ConfirmarExclusao(Guid id)
         {
-            var confirmado = await JS.InvokeAsync<bool>("confirm", "Deseja realmente excluir este pedido?");
+            var resultado = await JS.InvokeAsync<SwalResult>("Swal.fire", new
+            {
+                title = "Deseja realmente excluir este pedido?",
+                text = "Essa ação não poderá ser desfeita!",
+                icon = "warning",
+                showCancelButton = true,
+                confirmButtonColor = "#dc3545",
+                cancelButtonColor = "#6c757d",
+                confirmButtonText = "Sim, deletar",
+                cancelButtonText = "Cancelar"
+            });
 
-            if (confirmado)
+            if (resultado.IsConfirmed)
             {
                 await PedidoService.DeletarAsync(id);
                 await CarregarPedidos();
+
+                await JS.InvokeVoidAsync("Swal.fire", "Deletado!", "O pedido foi excluído com sucesso.", "success");
             }
         }
-        //TO-DO: SUBSTITUIR ESSE JS POR MODAL
+    }
+
+    public class SwalResult
+    {
+        public bool IsConfirmed { get; set; }
     }
 }

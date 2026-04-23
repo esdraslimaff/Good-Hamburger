@@ -33,17 +33,14 @@ namespace GoodHamburger.Application.Tests.Services
         [Fact]
         public async Task CriarPedidoAsync_DeveLancarDomainException_QuandoRequestForInvalido()
         {
-            // Arrange
             var request = new PedidoRequest();
             var failures = new List<ValidationFailure> { new ValidationFailure("ItensIds", "Erro de validação") };
 
             _validatorMock.Setup(v => v.ValidateAsync(request, default))
                           .ReturnsAsync(new ValidationResult(failures));
 
-            // Act
             Func<Task> act = async () => await _service.CriarPedidoAsync(request);
 
-            // Assert
             await act.Should().ThrowAsync<DomainException>().WithMessage("Erro de validação");
             _pedidoRepoMock.Verify(r => r.AddAsync(It.IsAny<Pedido>()), Times.Never);
         }
@@ -136,6 +133,17 @@ namespace GoodHamburger.Application.Tests.Services
             await _service.RemoverAsync(id);
 
             _pedidoRepoMock.Verify(r => r.DeleteAsync(pedido), Times.Once);
-        } //TO-DO: TESTE PARA CASO NÃO ENCONTRAR ID
+        }
+        [Fact]
+        public async Task RemoverAsync_NaoDeveChamarDelete_QuandoPedidoNaoExistir()
+        {
+            var idInexistente = Guid.NewGuid();
+
+            _pedidoRepoMock.Setup(r => r.GetByIdAsync(idInexistente)).ReturnsAsync((Pedido)null);
+
+            await _service.RemoverAsync(idInexistente);
+
+            _pedidoRepoMock.Verify(r => r.DeleteAsync(It.IsAny<Pedido>()), Times.Never);
+        }
     }
 }
