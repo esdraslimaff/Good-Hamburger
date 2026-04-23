@@ -18,7 +18,13 @@ namespace GoodHamburger.WebAPI.Controllers
             _service = service;
         }
 
+        /// <summary>
+        /// Obtém a lista completa de itens do cardápio disponíveis na lanchonete.
+        /// </summary>
+        /// <returns>Uma lista de itens do cardápio com seus respectivos preços e tipos.</returns>
+        /// <response code="200">Retorna a lista de itens do cardápio com sucesso.</response>
         [HttpGet]
+        [ProducesResponseType(typeof(IEnumerable<ItemCardapioDto>), StatusCodes.Status200OK)]
         public async Task<IActionResult> Get()
         {
             var itens = await _service.ObterItensAsync();

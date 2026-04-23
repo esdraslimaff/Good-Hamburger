@@ -1,4 +1,5 @@
 ﻿using GoodHamburger.Domain.Exceptions;
+using Microsoft.AspNetCore.Mvc;
 using System.Net;
 using System.Text.Json;
 
@@ -34,7 +35,14 @@ namespace GoodHamburger.WebAPI.Middleware
             context.Response.ContentType = "application/json";
             context.Response.StatusCode = (int)statusCode;
 
-            var result = JsonSerializer.Serialize(new { error = message });
+            var problemDetails = new ProblemDetails
+            {
+                Title = statusCode == HttpStatusCode.BadRequest ? "Erro de validação" : "Erro interno",
+                Detail = message,
+                Status = (int)statusCode
+            };
+
+            var result = JsonSerializer.Serialize(problemDetails);
             return context.Response.WriteAsync(result);
         }
     }
