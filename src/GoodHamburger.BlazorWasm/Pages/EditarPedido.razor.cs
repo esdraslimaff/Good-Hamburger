@@ -29,6 +29,8 @@ namespace GoodHamburger.BlazorWasm.Pages
             ItensCardapio?.GroupBy(x => x.Tipo) ?? Enumerable.Empty<IGrouping<TipoItem, ItemCardapioDto>>();
 
         private decimal descontoPercentualRegistrado;
+        private Guid? promocaoIdRegistrada;
+        private bool pedidoFoiAlterado = false;
 
         protected override async Task OnInitializedAsync()
         {
@@ -38,20 +40,29 @@ namespace GoodHamburger.BlazorWasm.Pages
 
                 var taskCardapio = CardapioService.GetItensAsync();
                 var taskPedido = PedidoService.GetPorIdAsync(Id);
-                var taskPromocoes = PromocaoService.GetPromocoesAsync();
 
-                await Task.WhenAll(taskCardapio, taskPedido, taskPromocoes);
+                await Task.WhenAll(taskCardapio, taskPedido);
 
                 ItensCardapio = await taskCardapio ?? new();
-                Promocoes = await taskPromocoes ?? new();
-
                 var pedidoAtual = await taskPedido;
 
                 descontoPercentualRegistrado = pedidoAtual?.DescontoPercentual ?? 0;
+                promocaoIdRegistrada = pedidoAtual?.PromocaoId;
 
                 if (pedidoAtual?.Itens != null)
                 {
                     ItensNoCarrinho = pedidoAtual.Itens.ToList();
+                }
+
+                if (promocaoIdRegistrada.HasValue)
+                {
+                    var promocaoOriginal = await PromocaoService.GetPromocaoPorIdAsync(promocaoIdRegistrada.Value);
+
+                    Promocoes = promocaoOriginal != null ? new List<PromocaoDto> { promocaoOriginal } : new List<PromocaoDto>();
+                }
+                else
+                {
+                    Promocoes = new List<PromocaoDto>();
                 }
 
                 AtualizarEstado();
@@ -65,6 +76,7 @@ namespace GoodHamburger.BlazorWasm.Pages
                 Carregando = false;
             }
         }
+
         protected void AdicionarAoCarrinho(ItemCardapioDto item)
         {
             MensagemErro = string.Empty;
@@ -80,6 +92,7 @@ namespace GoodHamburger.BlazorWasm.Pages
                 return;
             }
             ItensNoCarrinho.Add(item);
+            pedidoFoiAlterado = true;
             AtualizarEstado();
         }
 
@@ -89,6 +102,7 @@ namespace GoodHamburger.BlazorWasm.Pages
             if (itemNaLista != null)
             {
                 ItensNoCarrinho.Remove(itemNaLista);
+                pedidoFoiAlterado = true;
             }
 
             MensagemErro = string.Empty;
@@ -97,8 +111,9 @@ namespace GoodHamburger.BlazorWasm.Pages
 
         private void AtualizarEstado()
         {
-            Resumo = CalculadoraPedidoService.Calcular(ItensNoCarrinho, Promocoes, descontoPercentualRegistrado, isEdicao: true
-            );
+            var promocoesPermitidas = promocaoIdRegistrada.HasValue ? Promocoes.Where(p => p.Id == promocaoIdRegistrada.Value).ToList() : new List<PromocaoDto>();
+
+            Resumo = CalculadoraPedidoService.Calcular(ItensNoCarrinho, promocoesPermitidas, descontoPercentualRegistrado, pedidoFoiAlterado);
             StateHasChanged();
         }
 

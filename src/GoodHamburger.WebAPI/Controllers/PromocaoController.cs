@@ -1,6 +1,4 @@
 ﻿using GoodHamburger.Application.Interfaces;
-using GoodHamburger.Domain.Interfaces.Repository;
-using GoodHamburger.Shared.DTOs;
 using Microsoft.AspNetCore.Mvc;
 
 namespace GoodHamburger.WebAPI.Controllers
@@ -16,11 +14,36 @@ namespace GoodHamburger.WebAPI.Controllers
             _service = service;
         }
 
-        [HttpGet]
-        public async Task<IActionResult> Get()
+        [HttpGet("PromocoesAtivas")]
+        public async Task<IActionResult> GetAtivasAsync()
         {
             var promos = await _service.ObterAtivasAsync();
             return Ok(promos);
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> Get()
+        {
+            var promos = await _service.ObterTodasPromocoesAsync();
+            return Ok(promos);
+        }
+
+        [HttpGet("{id}")]
+        public async Task<IActionResult> GetById(Guid id)
+        {
+            var promocao = await _service.BuscarPromocaoComRequisitosPorIdAsync(id);
+
+            if (promocao == null)
+                return NotFound();
+
+            return Ok(promocao);
+        }
+
+        [HttpPatch("{id}/alternar-status")]
+        public async Task<IActionResult> AlternarStatus(Guid id)
+        {
+            await _service.AlternarStatusAsync(id);
+            return NoContent();
         }
     }
 }

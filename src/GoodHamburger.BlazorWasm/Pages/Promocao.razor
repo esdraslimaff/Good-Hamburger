@@ -7,6 +7,30 @@
         <p class="lead">Combine e economize na Good Hamburger.</p>
     </div>
 
+    <div class="card-body p-4 text-center">
+        <h4 class="text-danger fw-bold mb-4">📌 O que você precisa saber sobre nossos Combos</h4>
+
+        <div class="row text-start justify-content-center">
+            <div class="col-md-5 border-end">
+                <h5 class="fw-bold">🎁 Como ganhar o desconto?</h5>
+                <p>Escolha <strong>exatamente</strong> os itens descritos no combo. O desconto é aplicado no valor total desses itens assim que você fecha o pedido.</p>
+            </div>
+
+            <div class="col-md-5 ms-md-3">
+                <h5 class="fw-bold text-warning">⚠️ Dica para sua Edição</h5>
+                <p>
+                    Nossas promoções valem para combos específicos. Você pode <strong>trocar o sabor</strong> do seu item à vontade, mas se <strong>adicionar ou remover</strong> categorias (como tirar a batata ou colocar uma bebida extra), o sistema voltará aos preços individuais para garantir a flexibilidade do seu pedido.
+                </p>
+            </div>
+        </div>
+
+        <div class="mt-3">
+            <span class="badge bg-warning text-dark p-2">
+                💡 Dica: Mantenha a estrutura do combo original para garantir seu preço especial!
+            </span>
+        </div>
+    </div>
+
     @if (Promocoes == null)
     {
         <div class="text-center">
@@ -25,10 +49,10 @@
     else
     {
         <div class="row justify-content-center">
-    @foreach (var promo in Promocoes)
-    {
-        <PromocaoCard Promocao="promo" />
-    }
+            @foreach (var promo in Promocoes)
+            {
+                <PromocaoCard Promocao="promo" OnStatusToggled="AlternarStatusPromocao" />
+            }
         </div>
     }
 </div>

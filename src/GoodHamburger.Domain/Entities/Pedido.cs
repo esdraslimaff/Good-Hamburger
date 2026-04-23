@@ -1,8 +1,4 @@
-﻿using GoodHamburger.Domain.Enums;
-using GoodHamburger.Domain.Exceptions;
-using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using GoodHamburger.Domain.Exceptions;
 
 namespace GoodHamburger.Domain.Entities
 {
@@ -14,7 +10,7 @@ namespace GoodHamburger.Domain.Entities
         public decimal DescontoPercentual { get; private set; }
         public decimal ValorDesconto { get; private set; }
         public decimal TotalFinal { get; private set; }
-
+        public Guid? PromocaoId { get; private set; }
         public Pedido() : base() { }
 
         public void AdicionarProduto(Item produto)
@@ -27,6 +23,7 @@ namespace GoodHamburger.Domain.Entities
 
             _itens.Add(new PedidoItem(produto));
 
+            DescontoPercentual = 0;
             RecalcularTotais();
         }
 
@@ -36,14 +33,10 @@ namespace GoodHamburger.Domain.Entities
             if (item != null)
             {
                 _itens.Remove(item);
+
+                DescontoPercentual = 0;
                 RecalcularTotais();
             }
-        }
-
-        public void ProcessarPedido(IEnumerable<Promocao> regrasPromocoesAtivas)
-        {
-            DescontoPercentual = CalcularDescontoPercentual(regrasPromocoesAtivas);
-            RecalcularTotais();
         }
 
         private void RecalcularTotais()
@@ -55,16 +48,28 @@ namespace GoodHamburger.Domain.Entities
             RegistrarAlteracao();
         }
 
-        private decimal CalcularDescontoPercentual(IEnumerable<Promocao> regrasPromocoesAtivas)
+        public void AplicarPromocoes(IEnumerable<Promocao> promocoesDisponiveis)
         {
             var tiposNoPedido = _itens.Select(i => i.Tipo).ToList();
 
-            var melhorRegra = regrasPromocoesAtivas
-                .Where(r => r.SeAplica(tiposNoPedido))
-                .OrderByDescending(r => r.Percentual)
-                .FirstOrDefault();
+            var melhorPromocao = promocoesDisponiveis
+                .Where(p => p.ContemTodosRequisitos(tiposNoPedido) && p.Requisitos.Count == tiposNoPedido.Count)
+                .MaxBy(p => p.Percentual);
 
-            return melhorRegra?.Percentual ?? 0m;
+            if (melhorPromocao != null)
+            {
+                DescontoPercentual = melhorPromocao.Percentual;
+                PromocaoId = melhorPromocao.Id;
+            }
+            else
+            {
+                
+                DescontoPercentual = 0;
+                ValorDesconto = 0;
+                PromocaoId = null;
+            }
+
+            RecalcularTotais();
         }
     }
 }

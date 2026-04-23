@@ -6,11 +6,6 @@ using GoodHamburger.Domain.Interfaces;
 using GoodHamburger.Domain.Interfaces.Repository;
 using GoodHamburger.Shared.DTOs;
 using Mapster;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace GoodHamburger.Application.Services
 {
@@ -46,7 +41,7 @@ namespace GoodHamburger.Application.Services
 
             var regrasAtivas = await _promocao.ObterTodasAtivasAsync();
 
-            novoPedido.ProcessarPedido(regrasAtivas);
+            novoPedido.AplicarPromocoes(regrasAtivas);
 
             await _pedidoRepository.AddAsync(novoPedido);
 
@@ -73,9 +68,10 @@ namespace GoodHamburger.Application.Services
                 await _pedidoRepository.DeleteAsync(pedido);
             }
         }
+
         public async Task AtualizarPedidoAsync(Guid id, PedidoRequest request)
         {
-            var validationResult = await _validator.ValidateAsync(request);         
+            var validationResult = await _validator.ValidateAsync(request);
             if (!validationResult.IsValid)
                 throw new DomainException(validationResult.Errors.First().ErrorMessage);
 
@@ -87,6 +83,8 @@ namespace GoodHamburger.Application.Services
 
             var idsParaRemover = idsAtuais.Except(idsDesejados).ToList();
             var idsParaAdicionar = idsDesejados.Except(idsAtuais).ToList();
+
+            if (!idsParaRemover.Any() && !idsParaAdicionar.Any()) return;
 
             foreach (var idRemover in idsParaRemover)
             {
@@ -100,6 +98,19 @@ namespace GoodHamburger.Application.Services
                 {
                     pedido.AdicionarProduto(produto);
                 }
+            }
+
+            if (pedido.PromocaoId.HasValue)
+            {
+                var promocaoOriginal = await _promocao.BuscarPromocaoComRequisitosPorIdAsync(pedido.PromocaoId.Value);
+
+                var regrasParaValidar = promocaoOriginal != null ? new List<Promocao> { promocaoOriginal } : new List<Promocao>();
+
+                pedido.AplicarPromocoes(regrasParaValidar);
+            }
+            else
+            {
+                pedido.AplicarPromocoes(new List<Promocao>());
             }
 
             await _pedidoRepository.SaveChangesAsync();

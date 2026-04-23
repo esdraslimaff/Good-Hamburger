@@ -13,6 +13,11 @@ namespace GoodHamburger.BlazorWasm.Pages
 
         protected override async Task OnInitializedAsync()
         {
+            await CarregarPromocoes();
+        }
+
+        private async Task CarregarPromocoes()
+        {
             try
             {
                 Promocoes = await PromocaoService.GetPromocoesAsync();
@@ -20,6 +25,21 @@ namespace GoodHamburger.BlazorWasm.Pages
             catch (Exception)
             {
                 Nav.NavigateTo("/");
+            }
+        }
+
+        protected async Task AlternarStatusPromocao(PromocaoDto promo)
+        {
+            try
+            {
+                await PromocaoService.AlternarStatusAsync(promo.Id);
+                promo.Ativo = !promo.Ativo;
+
+                StateHasChanged();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Erro ao alterar status: {ex.Message}");
             }
         }
     }

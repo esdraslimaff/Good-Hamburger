@@ -1,5 +1,5 @@
-﻿using GoodHamburger.BlazorWasm.Models; // Certifique-se de ter este using
-using GoodHamburger.BlazorWasm.Services; // Para a CalculadoraPedidoService
+﻿using GoodHamburger.BlazorWasm.Models;
+using GoodHamburger.BlazorWasm.Services;
 using GoodHamburger.BlazorWasm.Services.Interfaces;
 using GoodHamburger.Domain.Enums;
 using GoodHamburger.Shared.DTOs;
@@ -29,7 +29,7 @@ namespace GoodHamburger.BlazorWasm.Pages
             try
             {
                 var taskCardapio = CardapioService.GetItensAsync();
-                var taskPromocoes = PromocaoService.GetPromocoesAsync();
+                var taskPromocoes = PromocaoService.GetPromocoesAtivasAsync();
 
                 await Task.WhenAll(taskCardapio, taskPromocoes);
 

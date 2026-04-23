@@ -1,6 +1,5 @@
 ﻿using GoodHamburger.Application.Interfaces;
 using GoodHamburger.Shared.DTOs;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace GoodHamburger.WebAPI.Controllers
@@ -10,7 +9,6 @@ namespace GoodHamburger.WebAPI.Controllers
     public class PedidosController : ControllerBase
     {
         private readonly IPedidoAppService _pedidoAppService;
-
         public PedidosController(IPedidoAppService pedidoAppService)
         {
             _pedidoAppService = pedidoAppService;

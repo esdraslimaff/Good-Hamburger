@@ -14,6 +14,7 @@ namespace GoodHamburger.Domain.Entities
 
         protected BaseEntity()
         {
+            Id = Guid.NewGuid();
             DataCriacao = DateTime.UtcNow;
         }
 

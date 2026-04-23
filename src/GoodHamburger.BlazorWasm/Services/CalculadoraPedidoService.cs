@@ -5,24 +5,25 @@ namespace GoodHamburger.BlazorWasm.Services
 {
     public static class CalculadoraPedidoService
     {
-        public static PedidoResumo Calcular(List<ItemCardapioDto> itens, List<PromocaoDto> promocoes, decimal descontoPercentualSalvo = 0, bool isEdicao = false)
+        public static PedidoResumo Calcular(List<ItemCardapioDto> itens, List<PromocaoDto> promocoesPermitidas, decimal descontoPercentualSalvo = 0, bool foiAlterado = false)
         {
             var resumo = new PedidoResumo
             {
                 Subtotal = itens.Sum(i => i.PrecoUnitario)
             };
-            
 
-            if (isEdicao)
+            if (!foiAlterado && descontoPercentualSalvo > 0)
             {
+                var promoOriginal = promocoesPermitidas.FirstOrDefault();
                 resumo.PercentualDesconto = descontoPercentualSalvo;
-                resumo.NomePromocaoAtiva = descontoPercentualSalvo > 0 ? "Desconto do Pedido Original" : "Sem promoção no pedido original";
+                resumo.NomePromocaoAtiva = promoOriginal?.Nome ?? "Promoção Original";
                 return resumo;
             }
 
             var tiposNoCarrinho = itens.Select(x => x.Tipo).Distinct().ToList();
-            var melhorPromocao = promocoes
-                .Where(p => p.Requisitos.All(tipoReq => tiposNoCarrinho.Contains(tipoReq)))
+
+            var melhorPromocao = promocoesPermitidas
+                .Where(p => p.Requisitos.All(tipoReq => tiposNoCarrinho.Contains(tipoReq)) && p.Requisitos.Count == tiposNoCarrinho.Count)
                 .OrderByDescending(p => p.Percentual)
                 .FirstOrDefault();
 
@@ -30,6 +31,11 @@ namespace GoodHamburger.BlazorWasm.Services
             {
                 resumo.PercentualDesconto = melhorPromocao.Percentual;
                 resumo.NomePromocaoAtiva = melhorPromocao.Nome;
+            }
+            else
+            {
+                resumo.PercentualDesconto = 0;
+                resumo.NomePromocaoAtiva = "Sem promoção aplicável";
             }
 
             return resumo;

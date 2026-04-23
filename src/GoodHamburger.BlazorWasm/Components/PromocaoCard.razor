@@ -1,10 +1,17 @@
 ﻿@using GoodHamburger.Shared.DTOs
+
 <div class="col-md-4 mb-4">
-    <div class="card h-100 border-danger shadow-lg">
+    <div class="card h-100 border-@(Promocao.Ativo ? "danger" : "secondary") shadow-lg @(Promocao.Ativo ? "" : "opacity-75")">
         <div class="card-body text-center">
-            <div class="badge bg-danger mb-2 p-2" style="font-size: 1.2rem;">
+
+            <div class="badge bg-@(Promocao.Ativo ? "danger" : "secondary") mb-2 p-2" style="font-size: 1.2rem;">
                 @(Promocao.Percentual.ToString("P0")) OFF
             </div>
+
+            @if (!Promocao.Ativo)
+            {
+                <div class="badge bg-dark mb-2 ms-2 p-2">INATIVA</div>
+            }
 
             <h4 class="card-title fw-bold">@Promocao.Nome</h4>
 
@@ -24,9 +31,15 @@
             </div>
         </div>
 
-        <div class="card-footer bg-transparent border-0 pb-3 text-center">
-            <button class="btn btn-outline-danger" @onclick="IrParaHome">
+        <div class="card-footer bg-transparent border-0 pb-3 text-center d-flex flex-column gap-2">
+            <button class="btn btn-outline-danger" @onclick="IrParaHome" disabled="@(!Promocao.Ativo)">
                 Aproveitar Agora
+            </button>
+
+            <hr class="m-1" />
+
+            <button class="btn btn-sm @(Promocao.Ativo ? "btn-secondary" : "btn-success")" @onclick="OnToggleStatus">
+                @(Promocao.Ativo ? "Desativar Promoção" : "Ativar Promoção")
             </button>
         </div>
     </div>
@@ -35,12 +48,21 @@
 @code {
     [Parameter]
     public PromocaoDto Promocao { get; set; }
-
+    [Parameter]
+    public EventCallback<PromocaoDto> OnStatusToggled { get; set; }
     [Inject]
     NavigationManager Nav { get; set; }
 
     void IrParaHome()
     {
         Nav.NavigateTo("/");
+    }
+
+    async Task OnToggleStatus()
+    {
+        if (OnStatusToggled.HasDelegate)
+        {
+            await OnStatusToggled.InvokeAsync(Promocao);
+        }
     }
 }
