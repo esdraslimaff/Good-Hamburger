@@ -46,8 +46,17 @@ docker compose up --build -d
 * API (Swagger): [http://localhost:8080/swagger](http://localhost:8080/swagger)
 
 > Observação: a API conecta no banco via `Server=db` (nome do serviço no compose).
-
 ---
+
+## 🗄️ Inicialização do Banco de Dados
+
+A aplicação aplica automaticamente as migrations do Entity Framework Core na inicialização da API. Esse comportamento está configurado no `Program.cs` da WebAPI, ao final do código, acima do app.Run();.
+
+Esse mecanismo foi pensado principalmente para execução via Docker, onde a API pode iniciar antes do banco de dados estar totalmente disponível.
+
+Nesses casos, o sistema realiza tentativas automáticas de rodar migrations, até que o banco esteja pronto.
+
+Para execução local sem Docker, recomenda-se garantir que o banco de dados esteja disponível antes de iniciar a aplicação(Assim as migrations serão rodadas em cima). Caso a execução automática das migrations seja removida do `Program.cs`, elas podem ser aplicadas manualmente via CLI do Entity Framework Core.
 
 ## 📡 Endpoints
 
