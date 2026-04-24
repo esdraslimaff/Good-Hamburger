@@ -4,12 +4,13 @@ API REST + Frontend (Blazor WASM) para gerenciamento de pedidos de uma lanchonet
 
 ---
 
-## 🚀 Objetivo
+## 🎯 Contexto do Projeto
 
-* Registrar pedidos
-* Aplicar regras de desconto automaticamente
-* Expor API REST documentada
+Sistema de pedidos com aplicação de regras de promoção baseadas em combinações de itens.
 
+O projeto foi desenvolvido com foco em boas práticas de arquitetura (Clean Architecture), separação de responsabilidades e centralização das regras de negócio no domínio.
+
+Além disso, inclui frontend em Blazor WASM e API REST documentada com Swagger.
 ---
 
 ## 🧱 Arquitetura
