@@ -37,7 +37,7 @@ Além disso, inclui frontend em Blazor WASM e API REST documentada com Swagger.
 ### Subir tudo
 
 ```bash
-docker compose up --build
+docker compose up --build -d
 ```
 
 ### Acessos
