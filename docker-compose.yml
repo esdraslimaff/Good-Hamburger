@@ -1,0 +1,39 @@
+version: '3.8'
+
+services:
+  db:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    container_name: goodhamburger_db
+    environment:
+      - ACCEPT_EULA=Y
+      - MSSQL_SA_PASSWORD=GoodHamburger@123!
+    ports:
+      - "1433:1433"
+
+
+  api:
+    image: goodhamburger_api
+    container_name: goodhamburger_api
+    build:
+      context: .
+      dockerfile: src/GoodHamburger.WebAPI/Dockerfile
+    depends_on:
+      - db
+    ports:
+      - "8080:8080" 
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+     
+      - ConnectionStrings__DefaultConnection=Server=db;Database=GoodHamburgerDB;User Id=sa;Password=GoodHamburger@123!;TrustServerCertificate=True;
+
+
+  web:
+    image: goodhamburger_web
+    container_name: goodhamburger_web
+    build:
+      context: .
+      dockerfile: src/GoodHamburger.BlazorWasm/Dockerfile
+    ports:
+      - "5000:80" 
+    depends_on:
+      - api

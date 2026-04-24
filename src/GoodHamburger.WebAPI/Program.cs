@@ -1,14 +1,14 @@
 using FluentValidation;
 using GoodHamburger.Application.DependencyInjection;
+using GoodHamburger.Infra.Data;
 using GoodHamburger.Infra.DependencyInjection;
 using GoodHamburger.Shared.Validators;
 using GoodHamburger.WebAPI.Middleware;
+using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(c =>
 {
@@ -24,19 +24,18 @@ builder.Services.AddControllers();
 
 builder.Services.AddCors(options =>
 {
-    options.AddPolicy("AllowBlazor",
+    options.AddPolicy("DevCors",
         policy =>
         {
             policy
-                .WithOrigins("https://localhost:7203")
+                .AllowAnyOrigin()
                 .AllowAnyHeader()
                 .AllowAnyMethod();
         });
 });
-
 var app = builder.Build();
 
-app.UseCors("AllowBlazor");
+app.UseCors("DevCors");
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
@@ -49,6 +48,33 @@ app.MapControllers();
 
 app.UseMiddleware<ExceptionMiddleware>();
 
-app.UseHttpsRedirection();
+if (!app.Environment.IsDevelopment())
+{
+    app.UseHttpsRedirection();
+}
+
+using (var scope = app.Services.CreateScope())
+{
+    var services = scope.ServiceProvider;
+    var logger = services.GetRequiredService<ILogger<Program>>();
+
+    for (int i = 1; i <= 5; i++)
+    {
+        try
+        {
+            logger.LogInformation("Tentativa {Tentativa} de aplicar as migrations...", i);
+            var context = services.GetRequiredService<AppDbContext>();
+
+            context.Database.Migrate();
+            logger.LogInformation("Banco de Dados criado e populado com sucesso!");
+            break;
+        }
+        catch (Exception ex)
+        {
+            logger.LogWarning("O banco de dados ainda não está pronto. Aguardando 5 segundos...");
+            Thread.Sleep(5000);
+        }
+    }
+}
 
 app.Run();

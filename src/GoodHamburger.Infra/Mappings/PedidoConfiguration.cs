@@ -17,9 +17,10 @@ namespace GoodHamburger.Infra.Mappings
             builder.HasKey(p => p.Id);
 
             builder.Property(p => p.DataCriacao).IsRequired();
-
-            var navigation = builder.Metadata.FindNavigation(nameof(Pedido.Itens));
-            navigation?.SetPropertyAccessMode(PropertyAccessMode.Field);
+            builder.Property(p => p.DescontoPercentual).HasPrecision(5, 2);
+            builder.Property(p => p.Subtotal).HasPrecision(18, 2);
+            builder.Property(p => p.ValorDesconto).HasPrecision(18, 2);
+            builder.Property(p => p.TotalFinal).HasPrecision(18, 2);
 
             builder.HasMany(p => p.Itens)
                    .WithOne()

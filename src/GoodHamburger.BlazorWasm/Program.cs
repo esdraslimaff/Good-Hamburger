@@ -15,7 +15,7 @@ builder.Services.AddScoped<IPromocaoService, PromocaoService>();
 
 builder.Services.AddScoped(sp => new HttpClient
 {
-    BaseAddress = new Uri("https://localhost:7240/")
+    BaseAddress = new Uri("http://localhost:8080")
 });
 
 await builder.Build().RunAsync();
