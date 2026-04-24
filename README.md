@@ -94,9 +94,9 @@ Content-Type: application/json
 
 {
   "itensIds": [
-    "UUID_DO_SANDUICHE",
-    "UUID_DA_BATATA",
-    "UUID_DO_REFRIGERANTE"
+    "GUID_DO_SANDUICHE",
+    "GUID_DA_BATATA",
+    "GUID_DO_REFRIGERANTE"
   ]
 }
 ```
@@ -105,7 +105,7 @@ Content-Type: application/json
 
 ```json
 {
-  "id": "uuid",
+  "id": "GUID",
   "subtotal": 9.5,
   "descontoPercentual": 0.2,
   "valorDesconto": 1.9,
