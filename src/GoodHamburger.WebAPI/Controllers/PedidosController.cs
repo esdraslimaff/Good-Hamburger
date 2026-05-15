@@ -1,11 +1,13 @@
 ﻿using GoodHamburger.Application.Interfaces;
 using GoodHamburger.Shared.DTOs;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace GoodHamburger.WebAPI.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class PedidosController : ControllerBase
     {
         private readonly IPedidoAppService _pedidoAppService;

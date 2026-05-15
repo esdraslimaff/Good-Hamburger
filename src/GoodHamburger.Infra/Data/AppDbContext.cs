@@ -1,10 +1,5 @@
 ﻿using GoodHamburger.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace GoodHamburger.Infra.Data
 {
@@ -16,6 +11,7 @@ namespace GoodHamburger.Infra.Data
         public DbSet<Item> Itens => Set<Item>();
         public DbSet<Promocao> Promocao => Set<Promocao>();
         public DbSet<PedidoItem> PedidoItens => Set<PedidoItem>();
+        public DbSet<Usuario> Usuarios => Set<Usuario>();
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

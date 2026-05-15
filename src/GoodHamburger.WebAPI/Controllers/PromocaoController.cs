@@ -1,4 +1,5 @@
 ﻿using GoodHamburger.Application.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace GoodHamburger.WebAPI.Controllers
@@ -20,6 +21,7 @@ namespace GoodHamburger.WebAPI.Controllers
         /// <returns>Uma lista contendo apenas as promoções vigentes.</returns>
         /// <response code="200">Retorna a lista de promoções ativas.</response>
         [HttpGet("PromocoesAtivas")]
+        [AllowAnonymous]
         [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task<IActionResult> GetAtivasAsync()
         {
@@ -67,6 +69,7 @@ namespace GoodHamburger.WebAPI.Controllers
         /// <response code="204">Status da promoção alterado com sucesso.</response>
         /// <response code="404">Se a promoção não for encontrada.</response>
         [HttpPatch("{id}/alternar-status")]
+        [Authorize(Roles = "Admin")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> AlternarStatus(Guid id)
