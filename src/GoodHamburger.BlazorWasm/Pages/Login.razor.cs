@@ -2,7 +2,6 @@
 using Microsoft.AspNetCore.Components;
 using Microsoft.JSInterop;
 using System.Net.Http.Json;
-// Adicione esta referência
 using Microsoft.AspNetCore.Components.Authorization;
 using GoodHamburger.BlazorWasm.Security;
 
