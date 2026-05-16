@@ -153,5 +153,6 @@ app.MapControllers();
 //         }
 //     }
 // }
+app.MapGet("/", () => Results.Ok("GoodHamburger API is running!"));
 
 app.Run();
