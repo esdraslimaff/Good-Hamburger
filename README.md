@@ -4,6 +4,16 @@ API REST + Frontend (Blazor WASM) para gerenciamento de pedidos de uma lanchonet
 
 ---
 
+## 🔐 Demo / Test Access
+
+A aplicação possui usuários de demonstração para testes de fluxo:
+
+### 👤 Admin
+- Email: admin@goodhamburger.com
+- Senha: 123456
+
+⚠️ Essas contas são apenas para fins de demonstração e podem ser alteradas ou removidas a qualquer momento.
+
 ## 🎯 Contexto do Projeto
 
 Sistema de pedidos com aplicação de regras de promoção baseadas em combinações de itens.
