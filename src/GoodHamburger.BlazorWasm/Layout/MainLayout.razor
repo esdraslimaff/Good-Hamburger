@@ -10,20 +10,23 @@
     </div>
 
     <main>
-        <div class="top-row px-4 d-flex justify-content-between align-items-center">
+        <div class="top-row px-3 px-md-4 d-flex justify-content-between align-items-center">
 
-            <div>
+            <div class="flex-shrink-0 me-2">
                 <a href="https://github.com/esdraslimaff/Good-Hamburger" target="_blank">Github</a>
             </div>
 
-            <div>
+            <div class="d-flex align-items-center justify-content-end flex-grow-1" style="min-width: 0;">
                 <AuthorizeView>
                     <Authorized>
-                        <span class="me-3 text-dark">Olá, @context.User.Identity.Name!</span>
-                        <button class="btn btn-outline-danger btn-sm" @onclick="Sair">Sair</button>
+                        <span class="me-2 text-dark text-truncate" title="@context.User.Identity.Name">
+                            Olá, @context.User.Identity.Name!
+                        </span>
+
+                        <button class="btn btn-outline-danger btn-sm flex-shrink-0" @onclick="Sair">Sair</button>
                     </Authorized>
                     <NotAuthorized>
-                        <a href="login" class="btn btn-primary btn-sm">Fazer Login</a>
+                        <a href="login" class="btn btn-primary btn-sm flex-shrink-0">Fazer Login</a>
                     </NotAuthorized>
                 </AuthorizeView>
             </div>
