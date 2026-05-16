@@ -22,7 +22,7 @@ builder.Services.AddScoped<AuthenticationStateProvider, CustomAuthStateProvider>
 
 builder.Services.AddHttpClient("GoodHamburgerAPI", client =>
 {
-    client.BaseAddress = new Uri("http://localhost:8080"); // A URL da API OU DOCKER
+    client.BaseAddress = new Uri("http://localhost:7240"); // A URL da API OU DOCKER
 }).AddHttpMessageHandler<CustomAuthorizationHandler>();
 
 builder.Services.AddScoped(sp => sp.GetRequiredService<IHttpClientFactory>().CreateClient("GoodHamburgerAPI"));
