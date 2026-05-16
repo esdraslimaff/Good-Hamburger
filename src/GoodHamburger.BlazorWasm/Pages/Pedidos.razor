@@ -1,4 +1,7 @@
 ﻿@page "/pedidos"
+@using Microsoft.AspNetCore.Authorization
+@using Microsoft.AspNetCore.Components.Authorization
+@attribute [Authorize]
 
 <div class="container mt-4">
     <div class="d-flex justify-content-between align-items-center mb-4">
@@ -70,15 +73,19 @@
                                         Detalhes
                                     </button>
 
-                                    <button class="btn btn-sm btn-outline-warning"
-                                            @onclick="() => IrParaEditar(pedido.Id)">
-                                        Editar
-                                    </button>
+                                    <AuthorizeView Roles="Admin">
+                                        <Authorized>
+                                            <button class="btn btn-sm btn-outline-warning"
+                                                    @onclick="() => IrParaEditar(pedido.Id)">
+                                                Editar
+                                            </button>
 
-                                    <button class="btn btn-sm btn-outline-danger"
-                                            @onclick="() => ConfirmarExclusao(pedido.Id)">
-                                        Excluir
-                                    </button>
+                                            <button class="btn btn-sm btn-outline-danger"
+                                                    @onclick="() => ConfirmarExclusao(pedido.Id)">
+                                                Excluir
+                                            </button>
+                                        </Authorized>
+                                    </AuthorizeView>
                                 </div>
                             </td>
                         </tr>

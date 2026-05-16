@@ -23,7 +23,7 @@ namespace GoodHamburger.BlazorWasm.Pages
             ListaPedidos = await PedidoService.GetTodosAsync();
         }
 
-        protected void IrParaNovoPedido() => Nav.NavigateTo("/");
+        protected void IrParaNovoPedido() => Nav.NavigateTo("/novo-pedido");
 
         protected void VerDetalhes(Guid id) => Nav.NavigateTo($"/pedidos/{id}");
 

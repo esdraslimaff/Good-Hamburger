@@ -27,7 +27,7 @@ namespace GoodHamburger.Infra.Services.Auth
                 Subject = new ClaimsIdentity(new[]
                 {
                     new Claim(ClaimTypes.Email, email),
-                    new Claim(ClaimTypes.Role, role)
+                    new Claim(ClaimTypes.Role, role),
                 }),
                 Expires = DateTime.UtcNow.AddHours(double.Parse(_configuration["Jwt:ExpireHours"])),
                 Issuer = _configuration["Jwt:Issuer"],

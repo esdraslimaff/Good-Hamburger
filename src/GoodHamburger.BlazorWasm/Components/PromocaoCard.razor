@@ -1,4 +1,5 @@
 ﻿@using GoodHamburger.Shared.DTOs
+@using Microsoft.AspNetCore.Components.Authorization
 
 <div class="col-md-4 mb-4">
     <div class="card h-100 border-@(Promocao.Ativo ? "danger" : "secondary") shadow-lg @(Promocao.Ativo ? "" : "opacity-75")">
@@ -36,11 +37,15 @@
                 Aproveitar Agora
             </button>
 
-            <hr class="m-1" />
+            <AuthorizeView Roles="Admin">
+                <Authorized>
+                    <hr class="m-1" />
+                    <button class="btn btn-sm @(Promocao.Ativo ? "btn-secondary" : "btn-success")" @onclick="OnToggleStatus">
+                        @(Promocao.Ativo ? "Desativar Promoção" : "Ativar Promoção")
+                    </button>
+                </Authorized>
+            </AuthorizeView>
 
-            <button class="btn btn-sm @(Promocao.Ativo ? "btn-secondary" : "btn-success")" @onclick="OnToggleStatus">
-                @(Promocao.Ativo ? "Desativar Promoção" : "Ativar Promoção")
-            </button>
         </div>
     </div>
 </div>

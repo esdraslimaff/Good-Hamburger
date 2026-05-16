@@ -1,12 +1,33 @@
 ﻿@inherits LayoutComponentBase
+@using Microsoft.AspNetCore.Components.Authorization
+@using GoodHamburger.BlazorWasm.Security
+@inject AuthenticationStateProvider AuthStateProvider
+@inject NavigationManager Nav
+
 <div class="page">
     <div class="sidebar">
         <NavMenu />
     </div>
 
     <main>
-        <div class="top-row px-4">
-            <a href="https://github.com/esdraslimaff/Good-Hamburger" target="_blank">Github</a>
+        <div class="top-row px-4 d-flex justify-content-between align-items-center">
+
+            <div>
+                <a href="https://github.com/esdraslimaff/Good-Hamburger" target="_blank">Github</a>
+            </div>
+
+            <div>
+                <AuthorizeView>
+                    <Authorized>
+                        <span class="me-3 text-dark">Olá, @context.User.Identity.Name!</span>
+                        <button class="btn btn-outline-danger btn-sm" @onclick="Sair">Sair</button>
+                    </Authorized>
+                    <NotAuthorized>
+                        <a href="login" class="btn btn-primary btn-sm">Fazer Login</a>
+                    </NotAuthorized>
+                </AuthorizeView>
+            </div>
+
         </div>
 
         <article class="content px-4">
@@ -14,3 +35,13 @@
         </article>
     </main>
 </div>
+
+@code {
+    private void Sair()
+    {
+        var customAuthStateProvider = (CustomAuthStateProvider)AuthStateProvider;
+        customAuthStateProvider.MarcarUsuarioComoDeslogado();
+
+        Nav.NavigateTo("/", true);
+    }
+}

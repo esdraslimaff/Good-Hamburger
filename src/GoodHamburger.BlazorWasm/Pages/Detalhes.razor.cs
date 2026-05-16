@@ -24,7 +24,7 @@ namespace GoodHamburger.BlazorWasm.Pages
             }
         }
 
-        protected void VoltarParaHome() => Nav.NavigateTo("/");
+        protected void VoltarParaHome() => Nav.NavigateTo("/novo-pedido");
         protected void IrParaPedidos() => Nav.NavigateTo("/pedidos");
     }
 }

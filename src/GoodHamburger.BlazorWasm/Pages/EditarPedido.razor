@@ -1,6 +1,8 @@
 ﻿@page "/pedidos/editar/{Id:guid}"
+@attribute [Authorize]
 @using GoodHamburger.Shared.DTOs
 @using GoodHamburger.BlazorWasm.Components
+@using Microsoft.AspNetCore.Authorization
 
 <div class="container mt-4">
     @if (Carregando)

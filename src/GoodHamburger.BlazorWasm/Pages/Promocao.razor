@@ -1,11 +1,22 @@
 ﻿@page "/promocoes"
 @using GoodHamburger.BlazorWasm.Components
+@using Microsoft.AspNetCore.Components.Authorization
 
 <div class="container mt-4">
     <div class="text-center mb-5">
         <h2 class="display-5 fw-bold text-danger">Ofertas Irresistíveis! 🔥</h2>
         <p class="lead">Combine e economize na Good Hamburger.</p>
     </div>
+
+    <AuthorizeView Roles="Admin">
+        <Authorized>
+            <div class="text-center mb-4">
+                @* TO-DO CRUD: <button class="btn btn-success" @onclick="CriarPromocao">
+                    <span class="bi bi-plus-circle"></span> Nova Promoção
+                </button> *@
+            </div>
+        </Authorized>
+    </AuthorizeView>
 
     <div class="card-body p-4 text-center">
         <h4 class="text-danger fw-bold mb-4">📌 O que você precisa saber sobre nossos Combos</h4>
